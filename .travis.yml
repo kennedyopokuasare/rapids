@@ -1,13 +1,17 @@
 services:
 - mysql
+
+dist: bionic
+
 language: python
 python:
 - '3.7'
+
 before_install:
-- sudo add-apt-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran40/'
+- sudo add-apt-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu bionic-cran40/'
 - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
-- sudo apt-get install -y -t xenial-cran40 r-base
-- sudo apt-get install -y -t xenial-cran40 r-base-dev
+- sudo apt-get install -y -t bionic-cran40 r-base
+- sudo apt-get install -y -t bionic-cran40 r-base-dev
 - sudo chmod ugo+rw /usr/local/lib/R/site-library
 - R -e 'install.packages(c( "rmarkdown"), repos = "http://cran.us.r-project.org")'
 - R --version
