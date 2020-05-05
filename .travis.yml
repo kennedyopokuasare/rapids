@@ -1,6 +1,8 @@
 services:
 - mysql
 
+os: linux
+
 dist: bionic
 
 language: python
@@ -12,8 +14,8 @@ before_install:
 # - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
 # - sudo apt-get install -y -t bionic-cran40 r-base
 # - sudo apt-get install -y -t bionic-cran40 r-base-dev
-- sudo apt-get install r-base
-- sudo apt-get install r-base-dev
+- sudo apt-get install -y r-base-4.0.0
+- sudo apt-get install -y r-base-dev
 - sudo chmod ugo+rw /usr/local/lib/R/site-library
 - R -e 'install.packages(c( "rmarkdown"), repos = "http://cran.us.r-project.org")'
 - R --version
