@@ -10,11 +10,11 @@ python:
 - '3.7'
 
 before_install:
-- sudo apt-get update
-- sudo apt-get upgrade
 - sudo apt-get install -y r-base
 - sudo apt-get install -y r-base-dev
-- sudo apt-get dist-upgrade
+- sudo apt-get update
+- sudo apt-get dist-upgrade r-base
+- sudo apt-get dist-upgrade r-base-dev
 - sudo chmod ugo+rw /usr/local/lib/R/site-library
 - R -e 'install.packages(c( "rmarkdown"), repos = "http://cran.us.r-project.org")'
 - R --version
