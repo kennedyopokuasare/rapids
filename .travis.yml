@@ -10,10 +10,11 @@ python:
 - '3.7'
 
 cache:
-  directories:
-  - $HOME/.local/share/renv
-  - $TRAVIS_BUILD_DIR/renv/library
-  
+    directories:
+      - /usr/local/lib/R
+      - $HOME/.local/share/renv
+      - $TRAVIS_BUILD_DIR/renv/library
+
 before_install:
 - /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 - export PATH=/home/linuxbrew/.linuxbrew/bin:$PATH
@@ -58,10 +59,6 @@ notifications:
       - "Repo `%{repository_slug}` *%{result}* build (<%{build_url}|#%{build_number}>) for commit (<%{compare_url}|%{commit}>) on branch `%{branch}`."
       - "Execution time: *%{duration}*"
       - "Message: %{message}"
-
-cache:
-    directories:
-      - /usr/local/lib/R
 
 branches:
   except:
