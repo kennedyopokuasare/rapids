@@ -11,6 +11,8 @@ python:
 
 before_install:
 - /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+- export PATH=$HOME/linuxbrew/.linuxbrew/bin:$PATH
+- source ~/.bashrc
 - brew install r
 - sudo chmod ugo+rw /usr/local/lib/R/site-library
 - R -e 'install.packages(c( "rmarkdown"), repos = "http://cran.us.r-project.org")'
