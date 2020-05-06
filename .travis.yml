@@ -3,18 +3,15 @@ services:
 
 os: linux
 
-dist: bionic
+dist: xenial
 
 language: python
 python:
 - '3.7'
 
 before_install:
-- sudo add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu bionic-cran40/"
-- sudo apt-key adv --keyserver keyserver.ubuntu.com:80 --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
-# - sudo apt-get update
-- sudo apt-get dist-upgrade  r-base=4.0.0-1.1804.0
-- sudo apt-get dist-upgrade -y r-base-dev=4.0.0-1.1804.0
+- /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+- brew install r
 - sudo chmod ugo+rw /usr/local/lib/R/site-library
 - R -e 'install.packages(c( "rmarkdown"), repos = "http://cran.us.r-project.org")'
 - R --version
