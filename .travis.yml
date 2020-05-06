@@ -35,9 +35,9 @@ install:
 - conda info -a
 - conda env create -q -n test-environment python=$TRAVIS_PYTHON_VERSION --file environment.yml
 - conda activate test-environment
-- Rscript -e "if (!requireNamespace('renv', quietly = TRUE)) install.packages('renv')"
-- Rscript -e "renv::init()"
-- Rscript -e "renv::restore()"
+- R -e 'if (!requireNamespace("renv", quietly = TRUE)) install.packages("renv", repos = "http://cran.us.r-project.org")'
+- R -e "renv::init()"
+- R -e "renv::restore()"
 
 #before_script:
 # Install renv and library 
