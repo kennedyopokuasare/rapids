@@ -35,15 +35,9 @@ install:
 - conda info -a
 - conda env create -q -n test-environment python=$TRAVIS_PYTHON_VERSION --file environment.yml
 - conda activate test-environment
-- R -e 'if (!requireNamespace("renv", quietly = TRUE)) install.packages("renv", repos = "http://cran.us.r-project.org")'
-- R -e "renv::init()"
-- R -e "renv::restore()"
-
-#before_script:
-# Install renv and library 
-#- snakemake renv_install
-#- snakemake renv_init
-#- snakemake renv_restore
+- snakemake renv_install
+- snakemake renv_init
+- snakemake renv_restore
 
 script:
 - cp -r tests/data/raw/* data/raw
