@@ -1,7 +1,7 @@
 ## renv_install: installs renv onto machine
 rule renv_install:
     shell:
-        "R -e 'if (!requireNamespace('renv', quietly = TRUE)) install.packages(\"renv\", repos=\"http://cran.us.r-project.org\")'"
+        "R -e 'if (!requireNamespace(\"renv\", quietly = TRUE)) install.packages(\"renv\", repos=\"http://cran.us.r-project.org\")'"
 
 ## renv_install: initialize a renv environment for this project
 rule renv_init:
