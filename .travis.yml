@@ -14,31 +14,31 @@ jobs:
         - export PATH=/home/linuxbrew/.linuxbrew/bin:$PATH
         - source ~/.bashrc
         - sudo apt-get install linuxbrew-wrapper
-      install:
+        - brew install r
+        - R -e 'install.packages(c( "rmarkdown"), repos = "http://cran.us.r-project.org")'
+        - R --version
         - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
         - bash miniconda.sh -b -p $HOME/miniconda
         - source "$HOME/miniconda/etc/profile.d/conda.sh"
         - hash -r
         - conda config --set always_yes yes --set changeps1 no
-      cache: 
-        directories:
-          - /home/linuxbrew/.linuxbrew
+      # cache: 
+      #   directories:
+      #     - /home/linuxbrew/.linuxbrew
             
     - name: "Python 3.7.4 on macOS"
       os: osx
       osx_image: xcode11.2  # Python 3.7.4 running on macOS 10.14.4
       language: shell       # 'language: python' is an error on Travis CI macOS
-      install:
+      before_install:
+        - brew install r
+        - R -e 'install.packages(c( "rmarkdown"), repos = "http://cran.us.r-project.org")'
+        - R --version
         - brew cask install miniconda
         - conda init bash
-      cache:
-        directories:
-          - /usr/local/lib/R
-            
-before_install:
-  - brew install r
-  - R -e 'install.packages(c( "rmarkdown"), repos = "http://cran.us.r-project.org")'
-  - R --version
+      # cache:
+      #   directories:
+      #     - /usr/local/lib/R
 
 install:
   - conda update -q conda
@@ -49,8 +49,13 @@ install:
   - snakemake renv_init
   - snakemake renv_restore 
 
+env:
+  global:
+    - CACHE_DIR=$([ $TRAVIS_OS_NAME = 'linux' ] && echo "/home/linuxbrew/.linuxbrew" || echo "/usr/local/lib/R")
+    
 cache:
   directories:
+    - $CACHE_DIR
     - $HOME/.local/share/renv
     - $TRAVIS_BUILD_DIR/renv/library
 
