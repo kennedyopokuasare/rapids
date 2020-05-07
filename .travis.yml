@@ -41,7 +41,7 @@ jobs:
       #     - /usr/local/lib/R
 
 install:
-  - conda update -q conda
+  - conda update -q --yes conda
   - conda info -a
   - conda env create -q -n test-environment python=$TRAVIS_PYTHON_VERSION --file environment.yml
   - conda activate test-environment
