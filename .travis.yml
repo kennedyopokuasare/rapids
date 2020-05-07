@@ -1,48 +1,55 @@
 services:
 - mysql
 
-os: linux
-
-dist: xenial
-
-language: python
-python:
-- '3.7'
-
-cache:
-    directories:
-      - /usr/local/lib/R
-      - $HOME/.local/share/renv
-      - $TRAVIS_BUILD_DIR/renv/library
+language: python            # this works for Linux but is an error on macOS or Windows
+jobs:
+  include:
+    - name: "Python 3.7 on Xenial Linux"
+      python: 3.7
+      before_install:
+        - /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+        - export PATH=/home/linuxbrew/.linuxbrew/bin:$PATH
+        - source ~/.bashrc
+        - sudo apt-get install linuxbrew-wrapper
+     install:
+        - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+        - bash miniconda.sh -b -p $HOME/miniconda
+        - source "$HOME/miniconda/etc/profile.d/conda.sh"
+        - hash -r
+        - conda config --set always_yes yes --set changeps1 no
+       
+    - name: "Python 3.7.4 on macOS"
+      os: osx
+      osx_image: xcode11.2  # Python 3.7.4 running on macOS 10.14.4
+      language: shell       # 'language: python' is an error on Travis CI macOS
+      install:
+        - brew cask install miniconda
+        - conda init bash
 
 before_install:
-- /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-- export PATH=/home/linuxbrew/.linuxbrew/bin:$PATH
-- source ~/.bashrc
-- sudo apt-get install linuxbrew-wrapper
-- brew install r
-# - sudo chmod ugo+rw /usr/local/lib/R/site-library
-- R -e 'install.packages(c( "rmarkdown"), repos = "http://cran.us.r-project.org")'
-- R --version
+  - brew install r
+  - R -e 'install.packages(c( "rmarkdown"), repos = "http://cran.us.r-project.org")'
+  - R --version
 
 install:
-- wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
-- bash miniconda.sh -b -p $HOME/miniconda
-- source "$HOME/miniconda/etc/profile.d/conda.sh"
-- hash -r
-- conda config --set always_yes yes --set changeps1 no
-- conda update -q conda
-- conda info -a
-- conda env create -q -n test-environment python=$TRAVIS_PYTHON_VERSION --file environment.yml
-- conda activate test-environment
-- snakemake renv_install
-- snakemake renv_init
-- snakemake renv_restore
+  - conda update -q conda
+  - conda info -a
+  - conda env create -q -n test-environment python=$TRAVIS_PYTHON_VERSION --file environment.yml
+  - conda activate test-environment
+  - snakemake renv_install
+  - snakemake renv_init
+  - snakemake renv_restore 
+
+cache:
+  directories:
+    - /usr/local/lib/R
+    - $HOME/.local/share/renv
+    - $TRAVIS_BUILD_DIR/renv/library
 
 script:
-- cp -r tests/data/raw/* data/raw
-- snakemake --profile tests/settings -R sms_features
-- python -m unittest discover tests/scripts/ -v
+  - cp -r tests/data/raw/* data/raw
+  - snakemake --profile tests/settings -R sms_features
+  - python -m unittest discover tests/scripts/ -v
 
 notifications:
   email: false
