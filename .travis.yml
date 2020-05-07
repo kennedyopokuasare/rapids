@@ -1,61 +1,74 @@
-services:
+  services:
   - mysql
 
-os: linux
+  language: python            # this works for Linux but is an error on macOS or Windows
+  jobs:
+    include:
+      - name: "Python 3.7 on Xenial Linux"
+        python: 3.7
+        before_install:
+          - /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+          - export PATH=/home/linuxbrew/.linuxbrew/bin:$PATH
+          - source ~/.bashrc
+          - sudo apt-get install linuxbrew-wrapper
+       install:
+          - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+          - bash miniconda.sh -b -p $HOME/miniconda
+          - source "$HOME/miniconda/etc/profile.d/conda.sh"
+          - hash -r
+          - conda config --set always_yes yes --set changeps1 no
+       cache: 
+          directories:
+            - /home/linuxbrew/.linuxbrew
+            
+      - name: "Python 3.7.4 on macOS"
+        os: osx
+        osx_image: xcode11.2  # Python 3.7.4 running on macOS 10.14.4
+        language: shell       # 'language: python' is an error on Travis CI macOS
+        install:
+          - brew cask install miniconda
+          - conda init bash
+        cache:
+          directories:
+            - /usr/local/lib/R
+            
+  before_install:
+    - brew install r
+    - R -e 'install.packages(c( "rmarkdown"), repos = "http://cran.us.r-project.org")'
+    - R --version
 
-dist: xenial
+  install:
+    - conda update -q conda
+    - conda info -a
+    - conda env create -q -n test-environment python=$TRAVIS_PYTHON_VERSION --file environment.yml
+    - conda activate test-environment
+    - snakemake renv_install
+    - snakemake renv_init
+    - snakemake renv_restore 
 
-language: python
-python:
-  - '3.7'
+  cache:
+    directories:
+      - $HOME/.local/share/renv
+      - $TRAVIS_BUILD_DIR/renv/library
 
-cache:
-  directories:
-    # - /usr/local/lib/R
-    - /home/linuxbrew/.linuxbrew/lib/R
-    - $HOME/.local/share/renv
-    - $TRAVIS_BUILD_DIR/renv/library
+  script:
+    - cp -r tests/data/raw/* data/raw
+    - snakemake --profile tests/settings -R sms_features
+    - python -m unittest discover tests/scripts/ -v
 
-before_install:
-  - /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-  - export PATH=/home/linuxbrew/.linuxbrew/bin:$PATH
-  - source ~/.bashrc
-  - sudo apt-get install linuxbrew-wrapper
-  - brew install r
-  - R --version
+  notifications:
+    email: false
+    slack:
+      secure: cJIpmIjb3zA5AMDBo9axF1v6fYNIgMm6s6UdMNOlHiT511xHGsaLUFej3lACwQLig4Gr94ySI61YdrP+RX1lFcYxusH+kUU/c8LX0PmSKNeKnycM3w/pCM+yTp/6oQG6ZrJD7pNm6zhB0xPL61uSmYhcr+JJ1sh4iLiON+J8/C+IfnAHm1ORkxJ0IxASkiP/LvaiAQDw8lNyYIZNWjSDNZbx68o1VNakyk6Vik3x8omiE3w33rzI2/JAx//QTxOq2J0dtV1AqYYSOWS4iXblV09NLBqgGrhAhrQ6+TbPHSPIyL/4EdhvS+YXO+SBWS7ODD7j/MuL6XiA4SujW72od2rgXNmOjFnlQvIrULO5bzv39BKKDkldvz9+XCyXLcjoLIwA/rmUnwMndNoC7NoD/CkQEevUxswXXB9811BmIFx/7GOHouVxwB2gaMAzkCroZJVwgbrc6ESSOVE5SMcb3wPMbpd8cXOgVZXJcmk5wK206zxXPigCvFfknqOnwDqRgyIWSFoTd/2wHppA7ND3R5U42nQTbEQ7MiONsOo61GlJTTxJELz32sLKl388AuAgOY7+0sqPibxMaHJkF1V4nYVTH0/H5bO/edK4VHMloJ6s0kuyko7LT5EMQf3pBJij5TnYmD2E60t+bSBAxHuH7WA5dvL+igjGEwROnxDc9pc=
+      on_success: always
+      template:
+        - "Repo `%{repository_slug}` *%{result}* build (<%{build_url}|#%{build_number}>) for commit (<%{compare_url}|%{commit}>) on branch `%{branch}`."
+        - "Execution time: *%{duration}*"
+        - "Message: %{message}"
 
-install:
-  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
-  - bash miniconda.sh -b -p $HOME/miniconda
-  - source "$HOME/miniconda/etc/profile.d/conda.sh"
-  - hash -r
-  - conda config --set always_yes yes --set changeps1 no
-  - conda update -q conda
-  - conda info -a
-  - conda env create -q -n test-environment python=$TRAVIS_PYTHON_VERSION --file environment.yml
-  - conda activate test-environment
-  - snakemake renv_install
-  - snakemake renv_init
-  - snakemake renv_restore
+  branches:
+    except:
+    - master
 
-script:
-  - cp -r tests/data/raw/* data/raw
-  - snakemake --profile tests/settings -R sms_features
-  - python -m unittest discover tests/scripts/ -v
-
-notifications:
-  email: false
-  slack:
-    secure: cJIpmIjb3zA5AMDBo9axF1v6fYNIgMm6s6UdMNOlHiT511xHGsaLUFej3lACwQLig4Gr94ySI61YdrP+RX1lFcYxusH+kUU/c8LX0PmSKNeKnycM3w/pCM+yTp/6oQG6ZrJD7pNm6zhB0xPL61uSmYhcr+JJ1sh4iLiON+J8/C+IfnAHm1ORkxJ0IxASkiP/LvaiAQDw8lNyYIZNWjSDNZbx68o1VNakyk6Vik3x8omiE3w33rzI2/JAx//QTxOq2J0dtV1AqYYSOWS4iXblV09NLBqgGrhAhrQ6+TbPHSPIyL/4EdhvS+YXO+SBWS7ODD7j/MuL6XiA4SujW72od2rgXNmOjFnlQvIrULO5bzv39BKKDkldvz9+XCyXLcjoLIwA/rmUnwMndNoC7NoD/CkQEevUxswXXB9811BmIFx/7GOHouVxwB2gaMAzkCroZJVwgbrc6ESSOVE5SMcb3wPMbpd8cXOgVZXJcmk5wK206zxXPigCvFfknqOnwDqRgyIWSFoTd/2wHppA7ND3R5U42nQTbEQ7MiONsOo61GlJTTxJELz32sLKl388AuAgOY7+0sqPibxMaHJkF1V4nYVTH0/H5bO/edK4VHMloJ6s0kuyko7LT5EMQf3pBJij5TnYmD2E60t+bSBAxHuH7WA5dvL+igjGEwROnxDc9pc=
-    on_success: always
-    template:
-      - "Repo `%{repository_slug}` *%{result}* build (<%{build_url}|#%{build_number}>) for commit (<%{compare_url}|%{commit}>) on branch `%{branch}`."
-      - "Execution time: *%{duration}*"
-      - "Message: %{message}"
-
-branches:
-  except:
-  - master
-
-  only:
-  - travis_test
+    only:
+    - travis_test
