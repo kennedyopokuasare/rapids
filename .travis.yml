@@ -35,7 +35,6 @@ jobs:
         - R -e 'install.packages(c( "rmarkdown"), repos = "http://cran.us.r-project.org")'
         - R --version
         - brew cask install miniconda
-        - conda init bash
       # cache:
       #   directories:
       #     - /usr/local/lib/R
@@ -43,6 +42,7 @@ jobs:
 install:
   - conda update -q --yes conda
   - conda info -a
+  - conda init bash
   - conda env create -q -n test-environment python=$TRAVIS_PYTHON_VERSION --file environment.yml
   - conda activate test-environment
   - snakemake renv_install
