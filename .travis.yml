@@ -5,21 +5,17 @@ osx_image: xcode11.3
 language: generic
 
 before_install:
+  - brew install mysql
+  - brew services start mysql
   - brew install r
   - R -e 'install.packages(c( "rmarkdown"), repos = "http://cran.us.r-project.org")'
   - R --version
 
-cache:
-  directories:
-    - /usr/local/lib/R
-    - $HOME/.local/share/renv
-    - $TRAVIS_BUILD_DIR/renv/library
-
 install:
-  - brew cask install miniconda3
-  - conda init bash
+  - brew cask install miniconda
   - conda update -q --yes conda
   # - conda info -a
+  - conda init bash
   - conda env create -q -n test-environment python=$TRAVIS_PYTHON_VERSION --file environment.yml
   - conda activate test-environment
   - snakemake renv_install
@@ -30,6 +26,12 @@ script:
   - cp -r tests/data/raw/* data/raw
   - snakemake --profile tests/settings -R sms_features
   - python -m unittest discover tests/scripts/ -v
+
+cache:
+  directories:
+    - /usr/local/lib/R
+    - $HOME/.local/share/renv
+    - $TRAVIS_BUILD_DIR/renv/library
 
 notifications:
   email: false
