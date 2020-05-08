@@ -1,49 +1,22 @@
-services:
-  - mysql
+os: osx
 
-language: python            # this works for Linux but is an error on macOS or Windows
+osx_image: xcode11.3
 
-jobs:
-  include:
-    - name: "Python 3.7 on Xenial Linux"
-      os: linux
-      language: python
-      python: 3.7
-      before_install:
-        - /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-        - export PATH=/home/linuxbrew/.linuxbrew/bin:$PATH
-        - source ~/.bashrc
-        - sudo apt-get install linuxbrew-wrapper
-        - brew install r
-        - R -e 'install.packages(c( "rmarkdown"), repos = "http://cran.us.r-project.org")'
-        - R --version
-        - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
-        - bash miniconda.sh -b -p $HOME/miniconda
-        - source "$HOME/miniconda/etc/profile.d/conda.sh"
-        - hash -r
-        - conda config --set always_yes yes --set changeps1 no
-      cache:
-        directories:
-          - /home/linuxbrew/.linuxbrew
-          - $HOME/.local/share/renv
-          - $TRAVIS_BUILD_DIR/renv/library
-            
-    - name: "Python 3.7 on macOS"
-      os: osx
-      osx_image: xcode11.3  # Python 3.7 running on macOS 10.14.4
-      language: shell       # 'language: python' is an error on Travis CI macOS
-      before_install:
-        - brew install r
-        - R -e 'install.packages(c( "rmarkdown"), repos = "http://cran.us.r-project.org")'
-        - R --version
-        - brew cask install miniconda3
-      cache:
-        directories:
-          - /usr/local/lib/R
-          - $HOME/.local/share/renv
-          - $TRAVIS_BUILD_DIR/renv/library
+language: generic
+
+before_install:
+  - brew install r
+  - R -e 'install.packages(c( "rmarkdown"), repos = "http://cran.us.r-project.org")'
+  - R --version
+
+cache:
+  directories:
+    - /usr/local/lib/R
+    - $HOME/.local/share/renv
+    - $TRAVIS_BUILD_DIR/renv/library
 
 install:
+  - brew cask install miniconda3
   - conda init bash
   - conda update -q --yes conda
   # - conda info -a
