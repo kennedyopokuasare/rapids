@@ -22,9 +22,11 @@ jobs:
         - source "$HOME/miniconda/etc/profile.d/conda.sh"
         - hash -r
         - conda config --set always_yes yes --set changeps1 no
-      # cache: 
-      #   directories:
-      #     - /home/linuxbrew/.linuxbrew
+      cache:
+        directories:
+          - /home/linuxbrew/.linuxbrew
+          - $HOME/.local/share/renv
+          - $TRAVIS_BUILD_DIR/renv/library
             
     - name: "Python 3.7.4 on macOS"
       os: osx
@@ -35,30 +37,22 @@ jobs:
         - R -e 'install.packages(c( "rmarkdown"), repos = "http://cran.us.r-project.org")'
         - R --version
         - brew cask install miniconda
-      # cache:
-      #   directories:
-      #     - /usr/local/lib/R
+      cache:
+        directories:
+          - /usr/local/lib/R
+          - $HOME/.local/share/renv
+          - $TRAVIS_BUILD_DIR/renv/library
 
 install:
+  - conda init bash
   - conda update -q --yes conda
   - conda info -a
-  - conda init bash
   - conda env create -q -n test-environment python=$TRAVIS_PYTHON_VERSION --file environment.yml
   - conda activate test-environment
   - snakemake renv_install
   - snakemake renv_init
   - snakemake renv_restore 
-
-env:
-  global:
-    - CACHE_DIR=$([ $TRAVIS_OS_NAME = 'linux' ] && echo "/home/linuxbrew/.linuxbrew" || echo "/usr/local/lib/R")
     
-cache:
-  directories:
-    - $CACHE_DIR
-    - $HOME/.local/share/renv
-    - $TRAVIS_BUILD_DIR/renv/library
-
 script:
   - cp -r tests/data/raw/* data/raw
   - snakemake --profile tests/settings -R sms_features
