@@ -15,7 +15,7 @@ install:
   - brew cask install miniconda
   - conda update -q --all --yes conda
   - conda env create -q -n test-environment python=$TRAVIS_PYTHON_VERSION --file environment.yml
-  - conda init bash
+  - conda init
   - conda activate test-environment
   - snakemake renv_install
   - snakemake renv_init
