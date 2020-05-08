@@ -13,7 +13,7 @@ before_install:
 
 install:
   - brew cask install miniconda
-  - conda update -q --yes conda
+  - conda update -q --yes conda libffi
   # - conda info -a
   - conda init bash
   - conda env create -q -n test-environment python=$TRAVIS_PYTHON_VERSION --file environment.yml
