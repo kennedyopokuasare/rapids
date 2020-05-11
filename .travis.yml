@@ -15,7 +15,6 @@ jobs:
         - source ~/.bashrc
         - sudo apt-get install linuxbrew-wrapper
         - brew install r
-        - R -e 'install.packages(c( "rmarkdown"), repos = "http://cran.us.r-project.org")'
         - R --version
         - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
         - bash miniconda.sh -b -p $HOME/miniconda
@@ -36,7 +35,6 @@ jobs:
         - brew install mysql
         - brew services start mysql
         - brew install r
-        - R -e 'install.packages(c( "rmarkdown"), repos = "http://cran.us.r-project.org")'
         - R --version
         - brew cask install miniconda
         - eval "$(/usr/local/bin/conda shell.bash hook)"
@@ -53,8 +51,7 @@ install:
   - conda env create -q -n test-environment python=$TRAVIS_PYTHON_VERSION --file environment.yml
   - conda activate test-environment
   - snakemake renv_install
-  - snakemake renv_init
-  - travis_wait snakemake renv_restore 
+  - snakemake renv_restore 
     
 script:
   - cp -r tests/data/raw/* data/raw
