@@ -1,37 +1,65 @@
-os: osx
+services:
+  - mysql
 
-osx_image: xcode11.3
+language: python            # this works for Linux but is an error on macOS or Windows
 
-language: generic
-
-before_install:
-  - brew install mysql
-  - brew services start mysql
-  - brew install r
-  - R -e 'install.packages(c( "rmarkdown"), repos = "http://cran.us.r-project.org")'
-  - R --version
+jobs:
+  include:
+    - name: "Python 3.7 on Xenial Linux"
+      os: linux
+      language: python
+      python: 3.7
+      before_install:
+        - /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+        - export PATH=/home/linuxbrew/.linuxbrew/bin:$PATH
+        - source ~/.bashrc
+        - sudo apt-get install linuxbrew-wrapper
+        - brew install r
+        - R -e 'install.packages(c( "rmarkdown"), repos = "http://cran.us.r-project.org")'
+        - R --version
+        - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+        - bash miniconda.sh -b -p $HOME/miniconda
+        - source "$HOME/miniconda/etc/profile.d/conda.sh"
+        - hash -r
+        - conda config --set always_yes yes --set changeps1 no
+      cache:
+        directories:
+          - /home/linuxbrew/.linuxbrew
+          - $HOME/.local/share/renv
+          - $TRAVIS_BUILD_DIR/renv/library
+            
+    - name: "Python 3.7 on macOS"
+      os: osx
+      osx_image: xcode11.3  # Python 3.7 running on macOS 10.14.4
+      language: generic       # 'language: python' is an error on Travis CI macOS
+      before_install:
+        - brew install mysql
+        - brew services start mysql
+        - brew install r
+        - R -e 'install.packages(c( "rmarkdown"), repos = "http://cran.us.r-project.org")'
+        - R --version
+        - brew cask install miniconda
+        - eval "$(/usr/local/bin/conda shell.bash hook)"
+      cache:
+        directories:
+          - /usr/local/lib/R
+          - $HOME/Library/Application Support/renv
+          - $TRAVIS_BUILD_DIR/renv/library
 
 install:
-  - brew cask install miniconda
-  - conda update -q --all --yes conda
-  - conda env create -q -n test-environment python=$TRAVIS_PYTHON_VERSION --file environment.yml
-  - eval "$(/usr/local/bin/conda shell.bash hook)"
   - conda init
+  - conda update -q --all --yes conda
+  - conda info -a
+  - conda env create -q -n test-environment python=$TRAVIS_PYTHON_VERSION --file environment.yml
   - conda activate test-environment
   - snakemake renv_install
   - snakemake renv_init
-  - travis_wait 70 snakemake renv_restore 
+  - snakemake renv_restore 
     
 script:
   - cp -r tests/data/raw/* data/raw
   - snakemake --profile tests/settings -R sms_features
   - python -m unittest discover tests/scripts/ -v
-
-cache:
-  directories:
-    - /usr/local/lib/R
-    - $HOME/.local/share/renv
-    - $TRAVIS_BUILD_DIR/renv/library
 
 notifications:
   email: false
@@ -43,10 +71,3 @@ notifications:
       - "Repo `%{repository_slug}` *%{result}* build (<%{build_url}|#%{build_number}>) for commit (<%{compare_url}|%{commit}>) on branch `%{branch}`."
       - "Execution time: *%{duration}*"
       - "Message: %{message}"
-
-  # branches:
-  #   except:
-  #     - master
-
-  #   only:
-  #     - travis_test
