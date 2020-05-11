@@ -54,7 +54,7 @@ install:
   - conda activate test-environment
   - snakemake renv_install
   - snakemake renv_init
-  - snakemake renv_restore 
+  - travis_wait snakemake renv_restore 
     
 script:
   - cp -r tests/data/raw/* data/raw
