@@ -38,10 +38,12 @@ jobs:
         - R --version
         - brew cask install miniconda
         - eval "$(/usr/local/bin/conda shell.bash hook)"
+      env:
+        - MAC_CACHE="$HOME/Library/Application Support/renv"
       cache:
         directories:
           - /usr/local/lib/R
-          - $HOME/Library/Application Support/renv
+          - $MAC_CACHE
           - $TRAVIS_BUILD_DIR/renv/library
 
 install:
@@ -54,7 +56,6 @@ install:
   - snakemake renv_restore 
     
 script:
-  - cp -r tests/data/raw/* data/raw
   - cp -r tests/data/raw/* data/raw
 #  - snakemake --profile tests/settings -R sms_features
 #  - python -m unittest discover tests/scripts/ -v
