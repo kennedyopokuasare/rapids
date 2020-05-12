@@ -58,12 +58,11 @@ install:
   - du -a $RENV_PATHS_ROOT
   - tree $RENV_PATHS_ROOT
   - ls -R $RENV_PATHS_ROOT
-  - snakemake renv_restore 
+#  - snakemake renv_restore 
     
 script:
   - cp -r tests/data/raw/* data/raw
   - du -a $RENV_PATHS_ROOT
-  - tree $RENV_PATHS_ROOT
   - ls -R $RENV_PATHS_ROOT
 #  - snakemake --profile tests/settings -R sms_features
 #  - python -m unittest discover tests/scripts/ -v
