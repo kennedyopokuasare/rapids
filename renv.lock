@@ -141,6 +141,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "1c5bb53bd428f3c42a25b7aeb983d8c7"
+    },
+    "xtable": {
+      "Package": "xtable",
+      "Version": "1.8-4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "b8acdf8af494d9ec19ccb2481a9b11c2"
     }
   }
 }
