@@ -56,16 +56,12 @@ install:
   - conda activate test-environment
   - snakemake renv_install
   - R -e 'renv::settings$use.cache(FALSE)'
-  - du -a $RENV_PATHS_ROOT
-  - ls -R $RENV_PATHS_ROOT
   - snakemake renv_restore 
     
 script:
   - cp -r tests/data/raw/* data/raw
-  - du -a $RENV_PATHS_ROOT
-  - ls -R $RENV_PATHS_ROOT
-#  - snakemake --profile tests/settings -R sms_features
-#  - python -m unittest discover tests/scripts/ -v
+  - snakemake --profile tests/settings -R sms_features
+  - python -m unittest discover tests/scripts/ -v
 
 notifications:
   email: false
