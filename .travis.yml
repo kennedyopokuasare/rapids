@@ -10,6 +10,9 @@ jobs:
       language: python
       python: 3.7
       before_install:
+        - /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+        - export PATH=/home/linuxbrew/.linuxbrew/bin:$PATH
+        - source ~/.bashrc
         - sudo apt-get install linuxbrew-wrapper
         - brew tap --shallow linuxbrew/xorg
         - brew install r
@@ -47,7 +50,6 @@ jobs:
 install:
   - conda init
   - conda update -q --all --yes conda
-  - conda info -a
   - conda env create -q -n test-environment python=$TRAVIS_PYTHON_VERSION --file environment.yml
   - conda activate test-environment
   - snakemake renv_install
