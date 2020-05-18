@@ -11,7 +11,7 @@ jobs:
       python: 3.7
       before_install:
         - sudo apt-get install linuxbrew-wrapper
-        - brew tap linuxbrew/xorg
+        - brew tap --shallow linuxbrew/xorg
         - brew install r
         - R --version
         - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
@@ -21,7 +21,7 @@ jobs:
         - conda config --set always_yes yes --set changeps1 no
       cache:
         directories:
-          - /home/linuxbrew/.linuxbrew
+          - /home/travis/.linuxbrew
           - $HOME/.local/share/renv
           - $TRAVIS_BUILD_DIR/renv/library
             
