@@ -39,12 +39,10 @@ jobs:
         - brew cask install miniconda
         - eval "$(/usr/local/bin/conda shell.bash hook)"
       env:
-        - MAC_CACHE="$HOME/Library/Application\\ Support/renv"
         - RENV_PATHS_ROOT="$HOME/renv/cache"
       cache:
         directories:
           - /usr/local/lib/R
-          - $MAC_CACHE
           - $RENV_PATHS_ROOT
           - $TRAVIS_BUILD_DIR/renv/library
 
