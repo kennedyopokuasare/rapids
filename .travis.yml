@@ -58,12 +58,7 @@ install:
   - snakemake renv_restore 
     
 script:
-  - cp -r tests/data/raw/* data/raw
-  - cp tests/data/external/* data/external 
-  - sed -e '10,20 s/^/#/' -e  's/rules.download_dataset.output/"data\/raw\/\{pid\}\/\{sensor\}_raw\.csv"/' rules/preprocessing.snakefile > tmp
-  - cp tmp rules/preprocessing.snakefile
-  - snakemake --profile tests/settings
-  - python -m unittest discover tests/scripts/ -v
+  - bash tests/scripts/run_tests.sh
 
 notifications:
   email: false
