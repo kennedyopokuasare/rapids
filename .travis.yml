@@ -59,6 +59,7 @@ install:
     
 script:
   - cp -r tests/data/raw/* data/raw
+  - cp tests/data/external/* data/external 
   - sed -e '10,20 s/^/#/' -e  's/rules.download_dataset.output/"data\/raw\/\{pid\}\/\{sensor\}_raw\.csv"/' rules/preprocessing.snakefile > tmp
   - cp tmp rules/preprocessing.snakefile
   - snakemake --profile tests/settings
