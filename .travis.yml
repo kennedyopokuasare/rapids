@@ -38,7 +38,8 @@ jobs:
         - brew install r
         - R --version
         - brew cask install miniconda
-        - eval "$(/usr/local/bin/conda shell.bash hook)"
+        - eval "$(/opt/miniconda3/condabin/conda shell.bash hook)"
+
       env:
         - RENV_PATHS_ROOT="$HOME/renv/cache"
       cache:
@@ -58,7 +59,9 @@ install:
     
 script:
   - cp -r tests/data/raw/* data/raw
-  - snakemake --profile tests/settings -R sms_features
+  - sed -e '10,20 s/^/#/' -e  's/rules.download_dataset.output/"data\/raw\/\{pid\}\/\{sensor\}_raw\.csv"/' rules/preprocessing.snakefile > tmp
+  - cp tmp rules/preprocessing.snakefile
+  - snakemake --profile tests/settings
   - python -m unittest discover tests/scripts/ -v
 
 notifications:
